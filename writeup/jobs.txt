@@ -1,0 +1,80 @@
+------------
+:Migrations:
+------------
+To start creating the Kubernete jobs I copy a templated job file from stackover flow. https://stackoverflow.com/questions/59583098/django-migrations-by-kubernetes-job-and-persistent-volume-claim
+
+Copy paste kubernete job template to new file call  migratemode.yaml.
+
+edit image variable key and command key using  django image name and using the python manage.py migrate and named the job. 
+
+kubectly apply -f migratemodel.yaml, applied the yaml to to kubernete and will execute the command.
+
+kubectl logs dbmigrate , checked validated to see if the command was executed properlly.
+
+copy the enviroment content from django-deploy.yaml to migratemodel.yaml file since the logs showed error after applying the yaml file.
+
+kubectly delete -f migratemodel.yaml delete the job from the kuberente cluster.
+ 
+kubectly apply -f migratemodel.yaml ,  reapplying the yaml file so content of the job will execute.
+
+kubcectl get pods, to check running status.
+
+---------
+:Seeding:
+---------
+Analzing where is the database importation, Checked DockerFile of the db -> entrypoint.sh -> setup.sql.
+copy the last file that does the importation to use for the next kubernete jobs to call by the script call seed.sql.
+
+LOAD DATA INFILE '/products.csv'INTO TABLE LegacySite_product FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\r\n';
+LOAD DATA INFILE '/users.csv' INTO TABLE LegacySite_user FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\r\n';
+
+kubectl exec -it pods mysql-container-6cbbbb657d-khcm6 sh , get inside the container and do some testing when delete the container and running the command.
+
+get inside the docker-entrpoit-inidb.d
+
+mysql setup.sql, run the script
+
+saw some errors showing existing keys
+
+mysql, run sql and run the commands from there
+
+Had to run paramater to authenticate in and specift which db
+
+mysql --user="root" --password="thisisatestthing." --database="GiftcardSiteDB"
+
+delete from LegacySite_product. 
+
+run the command
+
+LOAD DATA INFILE '/products.csv' INTO TABLE LegacySite_product FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\r\n';
+LOAD DATA INFILE '/products.csv' INTO TABLE LegacySite_product FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\r\n';
+
+files loaded, run the command again , which resulted the same error which may be aproblem if users.csv and the products.csv was edit to add more content. we need to ignore the data and append the new data.
+use the following command
+
+LOAD DATA INFILE '/products.csv' IGNORE INTO TABLE LegacySite_product FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\r\n';
+LOAD DATA INFILE '/products.csv' IGNORE INTO TABLE LegacySite_product FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\r\n';
+
+Data was executed without the error being outputting last time and state data is block because data is already there. 
+
+mysql -u root -p "thisisatestthing." GiftcardSiteDB 
+
+later relize that enviroment variables and test if i can login using enviroment variable 
+
+mysql --user=root --password=${MYSQL_ROOT_PASSWORD} --database=${MYSQL_DATABASE}
+
+run --host=mysql-service to feed the the seed.sql file that was created to sql
+
+mysql --user=root --password=${MYSQL_ROOT_PASSWORD} --database=${MYSQL_DATABASE} --host=mysql-service -f < /docker-entrypoint-initdb.d/seed.sql
+
+succefully ran, and adding into the docker file
+
+created a new kubernete job using the same template as before and edit the value that need was change which was. name, image, and command.
+
+within the docker file copy the seed.sql file to the same directory for the setup.sql
+
+kubectl apply -f migratemodel.ymal
+
+kubectl logs <dbpod>
+
+same result when row was added, if it preexist then get the log saying row ignored. 
