@@ -36,9 +36,9 @@ mysql setup.sql, run the script
 
 saw some errors showing existing keys
 
-mysql, run sql and run the commands from there
+mysql , run sql and run the commands from there
 
-Had to run paramater to authenticate in and specift which db
+Had to run paramater to authenticate in and specify a specific  which db which GiftcardSiteDB
 
 mysql --user="root" --password="thisisatestthing." --database="GiftcardSiteDB"
 
@@ -49,13 +49,13 @@ run the command
 LOAD DATA INFILE '/products.csv' INTO TABLE LegacySite_product FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\r\n';
 LOAD DATA INFILE '/products.csv' INTO TABLE LegacySite_product FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\r\n';
 
-files loaded, run the command again , which resulted the same error which may be aproblem if users.csv and the products.csv was edit to add more content. we need to ignore the data and append the new data.
+files loaded, run the command again , which resulted the same error which may be a problem if users.csv and the products.csv was edit to add more content. we need to ignore the data and append the new data.
 use the following command
 
 LOAD DATA INFILE '/products.csv' IGNORE INTO TABLE LegacySite_product FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\r\n';
 LOAD DATA INFILE '/products.csv' IGNORE INTO TABLE LegacySite_product FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\r\n';
 
-Data was executed without the error being outputting last time and state data is block because data is already there. 
+Data was executed without the error being outputed last time and state that the data is being block because data to add in the row is already there. 
 
 mysql -u root -p "thisisatestthing." GiftcardSiteDB 
 
@@ -69,7 +69,7 @@ mysql --user=root --password=${MYSQL_ROOT_PASSWORD} --database=${MYSQL_DATABASE}
 
 succefully ran, and adding into the docker file
 
-created a new kubernete job using the same template as before and edit the value that need was change which was. name, image, and command.
+created a new kubernete job using the same template as before and edit the value that need was change which was the follwoing: name, image, and command.
 
 within the docker file copy the seed.sql file to the same directory for the setup.sql
 
