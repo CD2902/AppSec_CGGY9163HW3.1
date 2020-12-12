@@ -1,0 +1,46 @@
+Prometheus||
+============
+Had to find the  monitoring code in Giftcardsite/Legacysite views.py.
+
+Looked at the assiociated libary for prometheus. Graphs.inc is being called within special keys that was writen in the views.py.
+
+Had to remove  all the keys since it log unsafe monitoring about the content of the website like logging in, registering interacting with the cards, I feel that is unsafe to even log that publicly. 
+
+created my graphs key database_error_return_404 and used graphs['database_error_return_404'].inc() near 404 errors to logged the error response of the website.
+
+Installed prometheus to run in the kuberenete cluster, used the following documentation to install helm and with promoetheus.
+
+https://www.redhat.com/sysadmin/installing-prometheus
+
+kubectl get pods , saw listed of prometheus pods running but not configured to my giftcard site.
+
+it stated in prometheus docs that i have edit the prometheus config map.
+
+Kubectl get configmap , finding the configuration for prometheus , which is promoetheus server.
+
+kubectl edit configmap prometheus-server, editing prometheus...  
+
+was using VIM, changed it to nano, alot eaiser.  
+
+export KUBE_EDITOR="nano"
+
+edit the configmap,
+
+added proxy-service:8080 under the targert
+
+save it.
+
+configmap should save it automatically without manually enter a commands.
+
+kubectl port-forward deployment/prometheus-pushgateway 9091, using the prometheus website which will point to the proxy-server that willpoint to the django giftcardsite app.
+
+open firefox . get request to localhost:9090
+
+click on metrics
+
+and find the key that was created in view.py which was database_error_return_404
+
+you can see database_error_return_404 value after executing button. 
+
+
+
